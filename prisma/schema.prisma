@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  title     String
+  content   String
+  writer    String
+  password  String
+
+  Comment Comment[]
+
+  @@fulltext([title, content, writer])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  postId    Int
+  parentId  Int?
+  content   String
+  writer    String
+  password  String
+
+  Post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  Parent  Comment?  @relation("CommentToReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  Replies Comment[] @relation("CommentToReplies")
+}
+
+model Alarm {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  writer    String
+  keyword   String
+}
+

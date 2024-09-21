@@ -1,0 +1,40 @@
+version: '3'
+
+volumes:
+  wanted-db-vol:
+    driver: local
+
+services:
+  db:
+    image: mysql/mysql-server:8.0
+    container_name: wanted-db
+    restart: always
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_520_ci
+      - --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    environment:
+      MYSQL_ROOT_PASSWORD: wanted
+      MYSQL_USER: wanted
+      MYSQL_PASSWORD: wanted
+      MYSQL_DATABASE: wanted-db
+    ports:
+      - '33910:3306'
+    volumes:
+      - wanted-db-vol:/var/lib/mysql
+  shawdow-db:
+    image: mysql/mysql-server:8.0
+    container_name: wanted-shadow-db
+    restart: always
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_520_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: wanted
+      MYSQL_USER: wanted
+      MYSQL_PASSWORD: wanted
+      MYSQL_DATABASE: wanted-shadow-db
+    ports:
+      - '33911:3306'
